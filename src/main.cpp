@@ -37,30 +37,48 @@ int main() {
 	glewExperimental = true;
 	glewInit();
 
-	GLfloat vertices[] = {
+	GLfloat first_triangle[] = {
 		-0.75f, -0.5f,  0.0f,
 		-0.25f, -0.5f,  0.0f,
 		-0.5f,   0.0f,  0.0f,
+	};
 
+	GLfloat second_triangle[] = {
 		 0.75f, -0.5f,  0.0f,
 		 0.25f, -0.5f,  0.0f,
 		 0.5f,   0.0f,  0.0f,
-
-		-0.25f,  0.25f, 0.0f,
-		 0.25f,  0.25f, 0.0f,
-		 0.0f,   0.75f, 0.0f
 	};
 
-	unsigned int VAO, VBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+	GLfloat third_triangle[] = {
+		-0.25f,  0.25f, 0.0f,
+		 0.25f,  0.25f, 0.0f,
+		 0.0f,   0.75f, 0.0f,
+	};
+
+	unsigned int VAOs[3], VBOs[3];
+	glGenVertexArrays(3, VAOs);
+	glGenBuffers(3, VBOs);
+
+	// setup first triangle
+	glBindVertexArray(VAOs[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(first_triangle), first_triangle, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+
+	// setup second triangle
+	glBindVertexArray(VAOs[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(second_triangle), second_triangle, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+	glEnableVertexAttribArray(0);
+
+	// setup third triangle
+	glBindVertexArray(VAOs[2]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(third_triangle), third_triangle, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+	glEnableVertexAttribArray(0);
 
 	int success;
 	char log[512];
@@ -132,15 +150,25 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(shader_program);
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 9);
+
+		// draw first triangle
+		glBindVertexArray(VAOs[0]);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		// draw second triangle
+		glBindVertexArray(VAOs[1]);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		// draw third triangle
+		glBindVertexArray(VAOs[2]);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwWaitEvents();
 		glfwSwapBuffers(window);
 	}
 
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(3, VAOs);
+	glDeleteBuffers(3, VBOs);
 
 	glfwTerminate();
 
