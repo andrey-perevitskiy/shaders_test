@@ -4,10 +4,11 @@ GLuint
 ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 	int success;
 	char log[512];
+	int i;
 
 	/* vertex shader */
 	printf("Reading vertex shader file \"%s\"... ", vertex_shader_path);
-	std::string vertex_shader_source;
+	/*std::string vertex_shader_source;
 	std::ifstream vertex_shader_file(vertex_shader_path, std::ifstream::binary);
 	if (vertex_shader_file) {
 		vertex_shader_file.seekg(0, vertex_shader_file.end);
@@ -22,9 +23,30 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 		vertex_shader_file.close();
 		vertex_shader_source = buff;
 		delete[] buff;
+	}*/
+
+	FILE *vertex_shader_file = fopen(vertex_shader_path, "r");
+	char *vertex_shader_source = (char *) malloc(sizeof(char));
+	const char *vertex_shader_source_pointer;
+	i = 0;
+	while (1) {
+		char c = fgetc(vertex_shader_file);
+
+		if (c == EOF) {
+			vertex_shader_source_pointer = vertex_shader_source;
+			fclose(vertex_shader_file);
+			break;
+		}
+
+		vertex_shader_source = (char *) realloc(vertex_shader_source, sizeof(char) * (i + 1));
+		vertex_shader_source[i] = c;
+		i++;
 	}
 
-	const char *vertex_shader_source_pointer = vertex_shader_source.c_str();
+	vertex_shader_source = (char *) realloc(vertex_shader_source, sizeof(char) * (i + 1));
+	vertex_shader_source[i] = '\0';
+
+	//const char *vertex_shader_source_pointer = vertex_shader_source.c_str();
 	printf("\n\n\n%s\n\n\n", vertex_shader_source_pointer);
 	int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &vertex_shader_source_pointer, NULL);
@@ -41,7 +63,7 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 
 	/* fragment shader */
 	printf("Reading fragment shader file \"%s\"... ", fragment_shader_path);
-	std::string fragment_shader_source;
+	/*std::string fragment_shader_source;
 	std::ifstream fragment_shader_file(fragment_shader_path, std::ifstream::binary);
 	if (fragment_shader_file) {
 		fragment_shader_file.seekg(0, fragment_shader_file.end);
@@ -56,15 +78,36 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 		fragment_shader_file.close();
 		fragment_shader_source = buff;
 		delete[] buff;
+	}*/
+
+	FILE *fragment_shader_file = fopen(fragment_shader_path, "r");
+	char *fragment_shader_source = (char *) malloc(sizeof(char));
+	const char *fragment_shader_source_pointer;
+	i = 0;
+	while (1) {
+		char c = fgetc(fragment_shader_file);
+
+		if (c == EOF) {
+			fragment_shader_source_pointer = fragment_shader_source;
+			fclose(fragment_shader_file);
+			break;
+		}
+
+		fragment_shader_source = (char *) realloc(fragment_shader_source, sizeof(char) * (i + 1));
+		fragment_shader_source[i] = c;
+		i++;
 	}
 
-	const char *fragment_shader_source_pointer = fragment_shader_source.c_str();
+	fragment_shader_source = (char *) realloc(fragment_shader_source, sizeof(char) * (i + 1));
+	fragment_shader_source[i] = '\0';
+
+	//const char *fragment_shader_source_pointer = fragment_shader_source.c_str();
 	printf("\n\n\n%s\n\n\n", fragment_shader_source_pointer);
 	int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &fragment_shader_source_pointer, NULL);
-  printf("Compiling fragment shader... ");
-  glCompileShader(fragment_shader);
-  glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+	glShaderSource(fragment_shader, 1, &fragment_shader_source_pointer, NULL);
+	printf("Compiling fragment shader... ");
+	glCompileShader(fragment_shader);
+	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragment_shader, 512, NULL, log);
 		printf("failed!\n");
@@ -74,19 +117,19 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 		printf("done!\n");
 
 	/* shader program */
-	unsigned int shader_program = glCreateProgram();
-	glAttachShader(shader_program, vertex_shader);
-	glAttachShader(shader_program, fragment_shader);
+	unsigned int program = glCreateProgram();
+	glAttachShader(program, vertex_shader);
+	glAttachShader(program, fragment_shader);
 	printf("Creating shader program... ");
-	glLinkProgram(shader_program);
-	glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
+	glLinkProgram(program);
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
 	if (!success) {
-		glGetProgramInfoLog(shader_program, 512, NULL, log);
+		glGetProgramInfoLog(program, 512, NULL, log);
 		printf("failed!\n");
 		printf("Shader program log: %s\n", log);
 		return 0;
 	} else
 		printf("done!\n");
 
-	return shader_program;
+	return program;
 }
