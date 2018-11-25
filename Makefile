@@ -1,19 +1,24 @@
 CXX=g++
 
-CXXFLAGS=-Wall
+CXXFLAGS=-Wall -Iinclude
 LDFLAGS=-lGL -lGLEW -lglfw
 
 BINS_DIR=bin
 
-OBJS=main.o
+SRCS_DIR=src
+OBJS_DIR=obj
+
+OBJS_CLEAN=main.o shader_utils.o
+
+OBJS=$(patsubst %,$(OBJS_DIR)/%,$(OBJS_CLEAN))
 
 PROG_NAME=prog
 
-all: obj/$(OBJS)
+all: $(OBJS)
 	mkdir -p $(BINS_DIR)
 	$(CXX) $(LDFLAGS) -o $(BINS_DIR)/$(PROG_NAME) $^
 
-obj/%.o: src/%.cpp
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 .PHONY clean:
