@@ -1,0 +1,15 @@
+#ifndef COLORSH
+#define COLORSH
+
+#define CDFT "\x1B[0m"
+#define CRED "\x1B[31m"
+#define CGRN "\x1B[32m"
+#define CYEL "\x1B[33m"
+#define CBLU "\x1B[34m"
+#define CMAG "\x1B[35m"
+#define CCYA "\x1B[36m"
+#define CWHT "\x1B[37m"
+
+#define CLYEL "\x1B[93m"
+
+#endif

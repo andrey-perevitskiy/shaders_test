@@ -19,7 +19,7 @@ int main() {
 		printf("done!\n");
 	}
 
-	printf("Create window... ");
+	printf("Creating window... ");
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -117,6 +117,7 @@ int main() {
 	glDeleteVertexArrays(3, VAOs);
 	glDeleteBuffers(3, VBOs);
 
+	printf("Closing GLFW...\n");
 	glfwTerminate();
 
 	return 0;
