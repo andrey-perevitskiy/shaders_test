@@ -6,7 +6,7 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 	char log[512];
 
 	/* vertex shader */
-	printf("Reading vertex shader file... ");
+	printf("Reading vertex shader file \"%s\"... ", vertex_shader_path);
 	std::string vertex_shader_source;
 	std::ifstream vertex_shader_file(vertex_shader_path, std::ifstream::binary);
 	if (vertex_shader_file) {
@@ -40,7 +40,7 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 		printf("done!\n");
 
 	/* fragment shader */
-	printf("Reading fragment shader file... ");
+	printf("Reading fragment shader file \"%s\"... ", fragment_shader_path);
 	std::string fragment_shader_source;
 	std::ifstream fragment_shader_file(fragment_shader_path, std::ifstream::binary);
 	if (fragment_shader_file) {

@@ -82,8 +82,12 @@ int main() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(0);
 
-	GLuint shader_program = ShaderCreate("shaders/simpleshader.vert.glsl",
-		"shaders/simpleshader.frag.glsl");
+	GLuint shader_green = ShaderCreate("shaders/green.vert.glsl",
+		"shaders/green.frag.glsl");
+	GLuint shader_yellow = ShaderCreate("shaders/yellow.vert.glsl",
+		"shaders/yellow.frag.glsl");
+	GLuint shader_cyan = ShaderCreate("shaders/cyan.vert.glsl",
+		"shaders/cyan.frag.glsl");
 
 	while (!glfwWindowShouldClose(window)) {
 		checkInput(window);
@@ -91,17 +95,18 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shader_program);
-
 		// draw first triangle
+		glUseProgram(shader_green);
 		glBindVertexArray(VAOs[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// draw second triangle
+		glUseProgram(shader_yellow);
 		glBindVertexArray(VAOs[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// draw third triangle
+		glUseProgram(shader_cyan);
 		glBindVertexArray(VAOs[2]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
