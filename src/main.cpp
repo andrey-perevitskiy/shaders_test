@@ -1,5 +1,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+using namespace glm;
 
 #include <stdio.h>
 
@@ -39,83 +44,34 @@ int main() {
 	glewExperimental = true;
 	glewInit();
 
-	GLfloat first_quad[] = {
-		-0.75f, -0.25f, 0.0f,
-		-0.75f, -0.75f, 0.0f,
-		-0.25f, -0.75f, 0.0f,
-		-0.25f, -0.25f, 0.0f,
+	GLfloat vertices[] = {
+		-0.5f, -0.5f, 0.0f,
+		 0.5f, -0.5f, 0.0f,
+		-0.5f,  0.5f, 0.0f,
+		 0.5f,  0.5f, 0.0f,
 	};
 
-	GLfloat second_quad[] = {
-		 0.25f, -0.25f, 0.0f,
-		 0.25f, -0.75f, 0.0f,
-		 0.75f, -0.75f, 0.0f,
-		 0.75f, -0.25f, 0.0f,
-	};
-
-	GLfloat third_quad[] = {
-		-0.25f,  0.75f, 0.0f,
-		-0.25f,  0.25f, 0.0f,
-		 0.25f,  0.25f, 0.0f,
-		 0.25f,  0.75f, 0.0f,
-	};
-
-	GLuint first_quad_indices[] = {
+	GLuint indices[] = {
 		0, 1, 2,
-		0, 3, 2
+		2, 1, 3,
 	};
 
-	GLuint second_quad_indices[] = {
-		0, 1, 2,
-		0, 3, 2
-	};
+	GLuint VAO, VBO, EBO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 
-	GLuint third_quad_indices[] = {
-		0, 1, 2,
-		0, 3, 2
-	};
-
-	GLuint VAOs[3], VBOs[3], EBOs[3];
-	glGenVertexArrays(3, VAOs);
-	glGenBuffers(3, VBOs);
-	glGenBuffers(3, EBOs);
-
-	// setup first triangle
-	glBindVertexArray(VAOs[0]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(first_quad), first_quad, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(first_quad_indices),
-		first_quad_indices, GL_STATIC_DRAW);
+	// setup vertices
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(0);
 
-	// setup second triangle
-	glBindVertexArray(VAOs[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(second_quad), second_quad, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(second_quad_indices),
-		second_quad_indices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-	glEnableVertexAttribArray(0);
-
-	// setup third triangle
-	glBindVertexArray(VAOs[2]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(third_quad), third_quad, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(third_quad_indices),
-		third_quad_indices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-	glEnableVertexAttribArray(0);
-
-	GLuint shader_green = ShaderCreate("shaders/green.vert.glsl",
-		"shaders/green.frag.glsl");
-	GLuint shader_yellow = ShaderCreate("shaders/yellow.vert.glsl",
-		"shaders/yellow.frag.glsl");
-	GLuint shader_cyan = ShaderCreate("shaders/cyan.vert.glsl",
-		"shaders/cyan.frag.glsl");
+	GLuint program = ShaderCreate("shaders/simpleshader.vert.glsl",
+		"shaders/simpleshader.frag.glsl");
 
 	// wireframe mode on
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -129,30 +85,29 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// draw first quad
-		glUseProgram(shader_green);
-		glBindVertexArray(VAOs[0]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
+		// rotate quad
+		mat4 trans;
+		trans = rotate(trans, (float) glfwGetTime(), vec3(0.0f, 1.0f, 1.0f));
+
+		// enable shader
+		glUseProgram(program);
+
+		// send uniform to shader
+		GLuint rotateLoc = glGetUniformLocation(program, "rotate");
+		glUniformMatrix4fv(rotateLoc, 1, GL_FALSE, value_ptr(trans));
+
+		// draw vertice by indices
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		// draw second quad
-		glUseProgram(shader_yellow);
-		glBindVertexArray(VAOs[1]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[1]);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		// draw third quad
-		glUseProgram(shader_cyan);
-		glBindVertexArray(VAOs[2]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[2]);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		glfwWaitEvents();
+		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
 
-	glDeleteVertexArrays(3, VAOs);
-	glDeleteBuffers(3, VBOs);
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 
 	printf("Closing GLFW...\n");
 	glfwTerminate();
