@@ -39,46 +39,74 @@ int main() {
 	glewExperimental = true;
 	glewInit();
 
-	GLfloat first_triangle[] = {
-		-0.75f, -0.5f,  0.0f,
-		-0.25f, -0.5f,  0.0f,
-		-0.5f,   0.0f,  0.0f,
+	GLfloat first_quad[] = {
+		-0.75f, -0.25f, 0.0f,
+		-0.75f, -0.75f, 0.0f,
+		-0.25f, -0.75f, 0.0f,
+		-0.25f, -0.25f, 0.0f,
 	};
 
-	GLfloat second_triangle[] = {
-		 0.75f, -0.5f,  0.0f,
-		 0.25f, -0.5f,  0.0f,
-		 0.5f,   0.0f,  0.0f,
+	GLfloat second_quad[] = {
+		 0.25f, -0.25f, 0.0f,
+		 0.25f, -0.75f, 0.0f,
+		 0.75f, -0.75f, 0.0f,
+		 0.75f, -0.25f, 0.0f,
 	};
 
-	GLfloat third_triangle[] = {
+	GLfloat third_quad[] = {
+		-0.25f,  0.75f, 0.0f,
 		-0.25f,  0.25f, 0.0f,
 		 0.25f,  0.25f, 0.0f,
-		 0.0f,   0.75f, 0.0f,
+		 0.25f,  0.75f, 0.0f,
 	};
 
-	unsigned int VAOs[3], VBOs[3];
+	GLuint first_quad_indices[] = {
+		0, 1, 2,
+		0, 3, 2
+	};
+
+	GLuint second_quad_indices[] = {
+		0, 1, 2,
+		0, 3, 2
+	};
+
+	GLuint third_quad_indices[] = {
+		0, 1, 2,
+		0, 3, 2
+	};
+
+	GLuint VAOs[3], VBOs[3], EBOs[3];
 	glGenVertexArrays(3, VAOs);
 	glGenBuffers(3, VBOs);
+	glGenBuffers(3, EBOs);
 
 	// setup first triangle
 	glBindVertexArray(VAOs[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(first_triangle), first_triangle, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(first_quad), first_quad, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(first_quad_indices),
+		first_quad_indices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(0);
 
 	// setup second triangle
 	glBindVertexArray(VAOs[1]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(second_triangle), second_triangle, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(second_quad), second_quad, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[1]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(second_quad_indices),
+		second_quad_indices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(0);
 
 	// setup third triangle
 	glBindVertexArray(VAOs[2]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(third_triangle), third_triangle, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(third_quad), third_quad, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[2]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(third_quad_indices),
+		third_quad_indices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(0);
 
@@ -89,26 +117,35 @@ int main() {
 	GLuint shader_cyan = ShaderCreate("shaders/cyan.vert.glsl",
 		"shaders/cyan.frag.glsl");
 
+	// wireframe mode on
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	// wireframe mode off
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	while (!glfwWindowShouldClose(window)) {
 		checkInput(window);
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// draw first triangle
+		// draw first quad
 		glUseProgram(shader_green);
 		glBindVertexArray(VAOs[0]);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		// draw second triangle
+		// draw second quad
 		glUseProgram(shader_yellow);
 		glBindVertexArray(VAOs[1]);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[1]);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		// draw third triangle
+		// draw third quad
 		glUseProgram(shader_cyan);
 		glBindVertexArray(VAOs[2]);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[2]);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwWaitEvents();
 		glfwSwapBuffers(window);
