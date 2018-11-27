@@ -45,15 +45,61 @@ int main() {
 	glewInit();
 
 	GLfloat vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f,
-		 0.5f,  0.5f, 0.0f,
+		// front
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+
+		// back
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+
+		// left
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f,  0.5f,
+
+		// right
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+
+		// top
+		-0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+
+		// bottom
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
 	};
 
 	GLuint indices[] = {
 		0, 1, 2,
 		2, 1, 3,
+
+		4, 5, 6,
+		6, 5, 7,
+
+		8, 9, 10,
+		10, 9, 11,
+
+		12, 13, 14,
+		14, 13, 15,
+
+		16, 17, 18,
+		18, 17, 19,
+
+		20, 21, 22,
+		22, 21, 23
 	};
 
 	GLuint VAO, VBO, EBO;
@@ -79,15 +125,18 @@ int main() {
 	// wireframe mode off
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+	glEnable(GL_DEPTH_TEST);
+
 	while (!glfwWindowShouldClose(window)) {
 		checkInput(window);
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// rotate quad
+		// rotate cube
 		mat4 trans;
-		trans = rotate(trans, (float) glfwGetTime(), vec3(0.0f, 1.0f, 1.0f));
+		trans = rotate(trans, radians(30.0f), vec3(1.0f, 0.0f, 0.0f));
+		trans = rotate(trans, (float) glfwGetTime(), vec3(0.0f, -1.0f, 0.0f));
 
 		// enable shader
 		glUseProgram(program);
@@ -96,10 +145,10 @@ int main() {
 		GLuint rotateLoc = glGetUniformLocation(program, "rotate");
 		glUniformMatrix4fv(rotateLoc, 1, GL_FALSE, value_ptr(trans));
 
-		// draw vertice by indices
+		// draw vertices by indices
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
