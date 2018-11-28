@@ -45,73 +45,52 @@ int main() {
 	glewInit();
 
 	GLfloat vertices[] = {
-		// front
-		-0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-
-		// back
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		-0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-
-		// left
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f,  0.5f,  0.5f,
-
-		// right
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f,  0.5f,
-
-		// top
-		-0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-
-		// bottom
-		-0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f, // FRONT left bottom      (0)
+		 0.5f, -0.5f,  0.5f, // FRONT right bottom     (1)
+		-0.5f,  0.5f,  0.5f, // FRONT left top         (2)
+		 0.5f,  0.5f,  0.5f, // FRONT right top        (3)
+		-0.5f,  0.5f, -0.5f, // LEFT left top          (4)
+		-0.5f, -0.5f, -0.5f, // LEFT left bottom       (5)
+		 0.5f,  0.5f, -0.5f, // TOP right top          (6)
+		 0.5f, -0.5f, -0.5f, // RIGHT right bottom     (7)
 	};
 
 	GLuint indices[] = {
+		// FRONT
 		0, 1, 2,
 		2, 1, 3,
 
-		4, 5, 6,
-		6, 5, 7,
+		// BACK
+		5, 7, 4,
+		4, 7, 6,
 
-		8, 9, 10,
-		10, 9, 11,
+		// LEFT
+		0, 2, 4,
+		4, 0, 5,
 
-		12, 13, 14,
-		14, 13, 15,
+		// RIGHT
+		1, 3, 6,
+		6, 1, 7,
 
-		16, 17, 18,
-		18, 17, 19,
+		// TOP
+		2, 3, 4,
+		4, 3, 6,
 
-		20, 21, 22,
-		22, 21, 23
+		// BOTTOM
+		0, 1, 5,
+		5, 1, 7,
 	};
 
-	GLuint VAO, VBO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	GLuint vao, vbo, ebo;
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ebo);
 
 	// setup vertices
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(0);
@@ -146,17 +125,17 @@ int main() {
 		glUniformMatrix4fv(rotateLoc, 1, GL_FALSE, value_ptr(trans));
 
 		// draw vertices by indices
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
 
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(1, &ebo);
 
 	printf("Closing GLFW...\n");
 	glfwTerminate();
