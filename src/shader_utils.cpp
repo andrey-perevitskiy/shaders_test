@@ -2,10 +2,12 @@
 
 GLuint
 ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
+	struct stat fileattribs;
+	size_t size;
+	char buff[256];
 	int success;
-	int i;
 
-	/* reading vertex shader file */
+	// reading vertex shader file
 #ifdef SHADER_DEBUG_PRINT_PATH
 	printf("Reading vertex shader file \"%s\"... ", vertex_shader_path);
 #endif
@@ -18,34 +20,29 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 		return 0;
 	}
 
-	char *vertex_shader_source = (char *) malloc(sizeof(char));
-	const char *vertex_shader_source_pointer;
-	i = 0;
-	while (1) {
-		char c = fgetc(vertex_shader_file);
-		if (c == EOF) {
-#ifdef SHADER_DEBUG_PRINT_PATH
-			printf("done!\n");
-#endif
-			vertex_shader_source_pointer = vertex_shader_source;
-			fclose(vertex_shader_file);
-			break;
-		}
-		vertex_shader_source = (char *) realloc(vertex_shader_source, sizeof(char) * (i + 1));
-		vertex_shader_source[i] = c;
-		i++;
-	}
+	// get size of file
+	if (stat(vertex_shader_path, &fileattribs) < 0)
+		return 0;
+	size = fileattribs.st_size;
+	char *vertex_shader_source = (char *) calloc(size, sizeof(char));
 
-	vertex_shader_source = (char *) realloc(vertex_shader_source, sizeof(char) * (i + 1));
-	vertex_shader_source[i] = '\0';
+	while (fgets(buff, 256, vertex_shader_file) != NULL)
+		strcat(vertex_shader_source, buff);
+
+	fclose(vertex_shader_file);
+	strcpy(buff, "");
+
+#ifdef SHADER_DEBUG_PRINT_PATH
+	printf("done!\n");
+#endif
 
 #ifdef SHADER_DEBUG_PRINT_FILE
-	printf("%s\n%s\n%s", CLYEL, vertex_shader_source_pointer, CDFT);
+	printf("%s\n%s%s\n%s\n%s", CGRN, vertex_shader_path, CLYEL, vertex_shader_source, CDFT);
 #endif
 
 	// compiling vertex shader
 	int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_shader_source_pointer, NULL);
+	glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
 
 #ifdef SHADER_DEBUG_PRINT_COMPILE
 	printf("Compiling vertex shader... ");
@@ -61,13 +58,12 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 		printf("Shader log: %s\n", vertex_shader_log);
 #endif
 		return 0;
-	} else {
+	} else
 #ifdef SHADER_DEBUG_PRINT_COMPILE
 		printf("done!\n");
 #endif
-	}
 
-	/* reading fragment shader file */
+	// reading fragment shader file
 #ifdef SHADER_DEBUG_PRINT_PATH
 	printf("Reading fragment shader file \"%s\"... ", fragment_shader_path);
 #endif
@@ -80,34 +76,28 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 		return 0;
 	}
 
-	char *fragment_shader_source = (char *) malloc(sizeof(char));
-	const char *fragment_shader_source_pointer;
-	i = 0;
-	while (1) {
-		char c = fgetc(fragment_shader_file);
-		if (c == EOF) {
-#ifdef SHADER_DEBUG_PRINT_PATH
-			printf("done!\n");
-#endif
-			fragment_shader_source_pointer = fragment_shader_source;
-			fclose(fragment_shader_file);
-			break;
-		}
-		fragment_shader_source = (char *) realloc(fragment_shader_source, sizeof(char) * (i + 1));
-		fragment_shader_source[i] = c;
-		i++;
-	}
+	// get size of file
+	if (stat(fragment_shader_path, &fileattribs) < 0)
+		return 0;
+	size = fileattribs.st_size;
+	char *fragment_shader_source = (char *) calloc(size, sizeof(char));
 
-	fragment_shader_source = (char *) realloc(fragment_shader_source, sizeof(char) * (i + 1));
-	fragment_shader_source[i] = '\0';
+	while (fgets(buff, 256, fragment_shader_file) != NULL)
+		strcat(fragment_shader_source, buff);
+
+	fclose(fragment_shader_file);
+
+#ifdef SHADER_DEBUG_PRINT_PATH
+	printf("done!\n");
+#endif
 
 #ifdef SHADER_DEBUG_PRINT_FILE
-	printf("%s\n%s\n%s", CLYEL, fragment_shader_source_pointer, CDFT);
+	printf("%s\n%s%s\n%s\n%s", CGRN, fragment_shader_path, CLYEL, fragment_shader_source, CDFT);
 #endif
 
 	// compiling fragment shader file
 	int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_shader_source_pointer, NULL);
+	glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
 
 #ifdef SHADER_DEBUG_PRINT_COMPILE
 	printf("Compiling fragment shader... ");
@@ -123,16 +113,22 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 		printf("Shader log: %s\n", fragment_shader_log);
 #endif
 		return 0;
-	} else {
+	} else
 #ifdef SHADER_DEBUG_PRINT_COMPILE
 		printf("done!\n");
 #endif
-	}
 
-	/* creating shader program */
+	// creating shader program
 	unsigned int program = glCreateProgram();
 	glAttachShader(program, vertex_shader);
 	glAttachShader(program, fragment_shader);
+
+	// clean trash
+	free(vertex_shader_source);
+	free(fragment_shader_source);
+
+	glDeleteShader(vertex_shader);
+	glDeleteShader(fragment_shader);
 
 #ifdef SHADER_DEBUG
 	printf("Creating shader program... ");

@@ -3,13 +3,11 @@ CXX=g++
 CXXFLAGS=-Wall -Iinclude
 LDFLAGS=-lGL -lGLEW -lglfw
 
-BINS_DIR=bin
-
 SRCS_DIR=src
 OBJS_DIR=obj
+BINS_DIR=bin
 
 OBJS_CLEAN=main.o shader_utils.o
-
 OBJS=$(patsubst %,$(OBJS_DIR)/%,$(OBJS_CLEAN))
 
 PROG_NAME=prog
