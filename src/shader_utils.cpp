@@ -23,11 +23,12 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 	// get size of file
 	if (stat(vertex_shader_path, &fileattribs) < 0)
 		return 0;
-	size = fileattribs.st_size;
-	char *vertex_shader_source = (char *) calloc(size, sizeof(char));
 
-	while (fgets(buff, 256, vertex_shader_file) != NULL)
-		strcat(vertex_shader_source, buff);
+	size = fileattribs.st_size;
+
+	char *vertex_shader_source = (char *) malloc(sizeof(char) * (size + 1));
+	fread(vertex_shader_source, sizeof(char), size, vertex_shader_file);
+	vertex_shader_source[size] = '\0';
 
 	fclose(vertex_shader_file);
 	strcpy(buff, "");
@@ -77,13 +78,14 @@ ShaderCreate(const char *vertex_shader_path, const char *fragment_shader_path) {
 	}
 
 	// get size of file
-	if (stat(fragment_shader_path, &fileattribs) < 0)
+	if (stat(vertex_shader_path, &fileattribs) < 0)
 		return 0;
-	size = fileattribs.st_size;
-	char *fragment_shader_source = (char *) calloc(size, sizeof(char));
 
-	while (fgets(buff, 256, fragment_shader_file) != NULL)
-		strcat(fragment_shader_source, buff);
+	size = fileattribs.st_size;
+
+	char *fragment_shader_source = (char *) malloc(sizeof(char) * (size + 1));
+	fread(fragment_shader_source, sizeof(char), size, fragment_shader_file);
+	fragment_shader_source[size] = '\0';
 
 	fclose(fragment_shader_file);
 
