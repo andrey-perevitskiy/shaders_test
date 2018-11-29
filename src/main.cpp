@@ -55,6 +55,15 @@ int main() {
 		 0.5f, -0.5f, -0.5f, // RIGHT right bottom     (7)
 	};
 
+	GLfloat colors[] = {
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 0.0f,
+	};
+
 	GLuint indices[] = {
 		// FRONT
 		0, 1, 2,
@@ -81,19 +90,27 @@ int main() {
 		5, 1, 7,
 	};
 
-	GLuint vao, vbo, ebo;
+	GLuint vao, vbo, vbo_colors, ebo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &vbo_colors);
 	glGenBuffers(1, &ebo);
 
 	// setup vertices
 	glBindVertexArray(vao);
+
+	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-	glEnableVertexAttribArray(0);
+
+	// setup colors
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
 	GLuint program = ShaderCreate("shaders/simpleshader.vert.glsl",
 		"shaders/simpleshader.frag.glsl");
@@ -120,13 +137,11 @@ int main() {
 		// enable shader
 		glUseProgram(program);
 
-		// send uniform to shader
+		// send uniform to shader for cube rotate
 		GLuint rotateLoc = glGetUniformLocation(program, "rotate");
 		glUniformMatrix4fv(rotateLoc, 1, GL_FALSE, value_ptr(trans));
 
 		// draw vertices by indices
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 		glfwPollEvents();
