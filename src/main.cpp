@@ -131,8 +131,8 @@ int main() {
 
 		// rotate cube
 		mat4 trans;
-		trans = rotate(trans, radians(30.0f), vec3(1.0f, 0.0f, 0.0f));
-		trans = rotate(trans, (float) glfwGetTime(), vec3(0.0f, -1.0f, 0.0f));
+		trans = rotate(trans, radians(-30.0f), vec3(1.0f, 0.0f, 0.0f));
+		trans = rotate(trans, (float) glfwGetTime(), vec3(0.0f, 1.0f, 0.0f));
 
 		// enable shader
 		glUseProgram(program);
