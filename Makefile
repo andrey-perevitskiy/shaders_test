@@ -7,7 +7,7 @@ SRCS_DIR=src
 OBJS_DIR=obj
 BINS_DIR=bin
 
-OBJS_CLEAN=main.o shader_utils.o
+OBJS_CLEAN=main.o shader.o
 OBJS=$(patsubst %,$(OBJS_DIR)/%,$(OBJS_CLEAN))
 
 PROG_NAME=prog

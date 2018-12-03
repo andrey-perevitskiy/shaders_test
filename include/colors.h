@@ -11,5 +11,6 @@
 #define CWHT "\x1B[37m"
 
 #define CLYEL "\x1B[93m"
+#define CLBLU "\x1B[94m"
 
 #endif
