@@ -11,11 +11,11 @@ using namespace glm;
 
 #include <consts.h>
 #include <shader.h>
+#include <vars.h>
 
 static void framebufferSizeCallback(GLFWwindow *window, int width, int height);
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-bool wireframe;
+static void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 
 int main() {
 	printf("Initialization GLFW... ");
@@ -44,6 +44,7 @@ int main() {
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glfwSetKeyCallback(window, keyCallback);
+	glfwSetScrollCallback(window, scrollCallback);
 
 	glewExperimental = true;
 	glewInit();
@@ -169,7 +170,12 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
+	// vars init
 	wireframe = false;
+
+	sc.x = 0.25f;
+	sc.y = 0.25f;
+	sc.z = 0.25f;
 
 	while (!glfwWindowShouldClose(window)) {
 		if (wireframe)
@@ -184,7 +190,8 @@ int main() {
 		mat4 cube_trans;
 		cube_trans = rotate(cube_trans, radians(SCENE_ROTATE_Y), vec3(1.0f, 0.0f, 0.0f));
 		cube_trans = rotate(cube_trans, SCENE_ROTATE_X, vec3(0.0f, 1.0f, 0.0f));
-		cube_trans = scale(cube_trans, vec3(SCENE_SCALE_X, SCENE_SCALE_Y, SCENE_SCALE_Z));
+		//cube_trans = scale(cube_trans, vec3(SCENE_SCALE_X, SCENE_SCALE_Y, SCENE_SCALE_Z));
+		cube_trans = scale(cube_trans, vec3(sc.x, sc.y, sc.z));
 
 		cube_shader.use(); // enable cube shader program
 
@@ -201,7 +208,8 @@ int main() {
 		mat4 flat_trans;
 		flat_trans = rotate(flat_trans, radians(SCENE_ROTATE_Y), vec3(1.0f, 0.0f, 0.0f));
 		flat_trans = rotate(flat_trans, SCENE_ROTATE_X, vec3(0.0f, 1.0f, 0.0f));
-		flat_trans = scale(flat_trans, vec3(SCENE_SCALE_X, SCENE_SCALE_Y, SCENE_SCALE_Z));
+		//flat_trans = scale(flat_trans, vec3(SCENE_SCALE_X, SCENE_SCALE_Y, SCENE_SCALE_Z));
+		flat_trans = scale(flat_trans, vec3(sc.x, sc.y, sc.z));
 
 		flat_shader.use(); // enable flat shader program
 
@@ -218,7 +226,7 @@ int main() {
 		glfwSwapBuffers(window);
 	}
 
-	glDeleteVertexArrays(3, vao);
+	glDeleteVertexArrays(2, vao);
 	glDeleteBuffers(4, vbo);
 	glDeleteBuffers(2, ebo);
 
@@ -237,6 +245,35 @@ static void
 keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	else if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
-		wireframe ? wireframe = false : wireframe = true;
+	else if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+		if (wireframe)
+			wireframe = false;
+		else
+			wireframe = true;
+	}
+}
+
+static void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
+	if (yoffset < 0) {
+		sc.x -= SCROLL_SENSITIVITY;
+		sc.y -= SCROLL_SENSITIVITY;
+		sc.z -= SCROLL_SENSITIVITY;
+	} else {
+		sc.x += SCROLL_SENSITIVITY;
+		sc.y += SCROLL_SENSITIVITY;
+		sc.z += SCROLL_SENSITIVITY;
+	}
+
+	// debug
+	//printf("%ssc.x: %.3f | sc.y: %.3f | sc.z: %.3f%s\n", CLCYA, sc.x, sc.y, sc.z, CDFT);
+
+	if (sc.x <= SCROLL_SCALE_MIN || sc.y <= SCROLL_SCALE_MIN || sc.z <= SCROLL_SCALE_MIN) {
+		sc.x = SCROLL_SCALE_MIN;
+		sc.y = SCROLL_SCALE_MIN;
+		sc.z = SCROLL_SCALE_MIN;
+	} else if (sc.x >= SCROLL_SCALE_MAX || sc.y >= SCROLL_SCALE_MAX || sc.z >= SCROLL_SCALE_MAX) {
+		sc.x = SCROLL_SCALE_MAX;
+		sc.y = SCROLL_SCALE_MAX;
+		sc.z = SCROLL_SCALE_MAX;
+	}
 }

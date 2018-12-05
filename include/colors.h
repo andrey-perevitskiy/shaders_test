@@ -12,5 +12,6 @@
 
 #define CLYEL "\x1B[93m"
 #define CLBLU "\x1B[94m"
+#define CLCYA "\x1B[96m"
 
 #endif
