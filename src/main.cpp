@@ -5,17 +5,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-using namespace glm;
-
 #include <stdio.h>
 
 #include <consts.h>
 #include <shader.h>
 #include <vars.h>
 
-static void framebufferSizeCallback(GLFWwindow *window, int width, int height);
-static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-static void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
+static void framebufferSizeCallback(GLFWwindow *window, int width,
+	int height);
+static void keyCallback(GLFWwindow* window, int key, int scancode,
+	int action, int mods);
+static void scrollCallback(GLFWwindow *window, double xoffset,
+	double yoffset);
 
 int main() {
 	printf("Initialization GLFW... ");
@@ -131,15 +132,18 @@ int main() {
 
 	// setup cube vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]); // vbo[0] --> cube_vertices
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices,
+		GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[0]); // ebo[0] --> cube_indices
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_indices), cube_indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_indices), cube_indices,
+		GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(0);
 
 	// setup cube colors
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]); // vbo[1] --> cube_colors
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_colors), cube_colors, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cube_colors), cube_colors,
+		GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(1);
 	// END
@@ -149,15 +153,18 @@ int main() {
 
 	// setup flat vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[2]); // vbo[2] --> flat_vertices
-	glBufferData(GL_ARRAY_BUFFER, sizeof(flat_vertices), flat_vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(flat_vertices), flat_vertices,
+		GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[1]); // ebo[1] --> flat_indices
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(flat_indices), flat_indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(flat_indices), flat_indices,
+		GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(0);
 
 	// setup flat colors
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[3]); // vbo[3] --> flat_colors
-	glBufferData(GL_ARRAY_BUFFER, sizeof(flat_colors), flat_colors, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(flat_colors), flat_colors,
+		GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 	glEnableVertexAttribArray(1);
 	// END
@@ -187,39 +194,49 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// BEGIN cube processing
-		mat4 cube_trans;
-		cube_trans = rotate(cube_trans, radians(SCENE_ROTATE_Y), vec3(1.0f, 0.0f, 0.0f));
-		cube_trans = rotate(cube_trans, SCENE_ROTATE_X, vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 cube_trans;
+		cube_trans = glm::rotate(cube_trans, glm::radians(SCENE_ROTATE_Y),
+			glm::vec3(1.0f, 0.0f, 0.0f));
+		cube_trans = glm::rotate(cube_trans, SCENE_ROTATE_X,
+			glm::vec3(0.0f, 1.0f, 0.0f));
 		//cube_trans = scale(cube_trans, vec3(SCENE_SCALE_X, SCENE_SCALE_Y, SCENE_SCALE_Z));
-		cube_trans = scale(cube_trans, vec3(sc.x, sc.y, sc.z));
+		cube_trans = glm::scale(cube_trans, glm::vec3(sc.x, sc.y, sc.z));
 
 		cube_shader.use(); // enable cube shader program
 
 		// send uniform to shader for cube rotation
-		GLuint cube_trans_location = glGetUniformLocation(cube_shader.getId(), "cube_trans");
-		glUniformMatrix4fv(cube_trans_location, 1, GL_FALSE, value_ptr(cube_trans));
+		GLuint cube_trans_location = glGetUniformLocation(cube_shader.getId(),
+			"cube_trans");
+		glUniformMatrix4fv(cube_trans_location, 1, GL_FALSE,
+			value_ptr(cube_trans));
 
 		// draw cube vertices by cube indices
 		glBindVertexArray(vao[0]);
-		glDrawElements(GL_TRIANGLES, sizeof(cube_indices) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(cube_indices) /
+			sizeof(unsigned int), GL_UNSIGNED_INT, 0);
 		// END
 
 		// BEGIN flat processing
-		mat4 flat_trans;
-		flat_trans = rotate(flat_trans, radians(SCENE_ROTATE_Y), vec3(1.0f, 0.0f, 0.0f));
-		flat_trans = rotate(flat_trans, SCENE_ROTATE_X, vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 flat_trans;
+		flat_trans = glm::rotate(flat_trans, glm::radians(SCENE_ROTATE_Y),
+			glm::vec3(1.0f, 0.0f, 0.0f));
+		flat_trans = glm::rotate(flat_trans, SCENE_ROTATE_X,
+			glm::vec3(0.0f, 1.0f, 0.0f));
 		//flat_trans = scale(flat_trans, vec3(SCENE_SCALE_X, SCENE_SCALE_Y, SCENE_SCALE_Z));
-		flat_trans = scale(flat_trans, vec3(sc.x, sc.y, sc.z));
+		flat_trans = glm::scale(flat_trans, glm::vec3(sc.x, sc.y, sc.z));
 
 		flat_shader.use(); // enable flat shader program
 
 		// send uniform to shader for flat rotation
-		GLuint flat_trans_location = glGetUniformLocation(flat_shader.getId(), "flat_trans");
-		glUniformMatrix4fv(flat_trans_location, 1, GL_FALSE, value_ptr(flat_trans));
+		GLuint flat_trans_location = glGetUniformLocation(flat_shader.getId(),
+			"flat_trans");
+		glUniformMatrix4fv(flat_trans_location, 1, GL_FALSE,
+			value_ptr(flat_trans));
 
 		// draw flat vertices by flat indices
 		glBindVertexArray(vao[1]);
-		glDrawElements(GL_TRIANGLES, sizeof(flat_indices) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(flat_indices) /
+			sizeof(unsigned int), GL_UNSIGNED_INT, 0);
 		// END
 
 		glfwPollEvents();
@@ -253,7 +270,8 @@ keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	}
 }
 
-static void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
+static void scrollCallback(GLFWwindow *window, double xoffset,
+	double yoffset) {
 	if (yoffset < 0) {
 		sc.x -= SCROLL_SENSITIVITY;
 		sc.y -= SCROLL_SENSITIVITY;
@@ -267,11 +285,13 @@ static void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
 	// debug
 	//printf("%ssc.x: %.3f | sc.y: %.3f | sc.z: %.3f%s\n", CLCYA, sc.x, sc.y, sc.z, CDFT);
 
-	if (sc.x <= SCROLL_SCALE_MIN || sc.y <= SCROLL_SCALE_MIN || sc.z <= SCROLL_SCALE_MIN) {
+	if (sc.x <= SCROLL_SCALE_MIN || sc.y <= SCROLL_SCALE_MIN ||
+		sc.z <= SCROLL_SCALE_MIN) {
 		sc.x = SCROLL_SCALE_MIN;
 		sc.y = SCROLL_SCALE_MIN;
 		sc.z = SCROLL_SCALE_MIN;
-	} else if (sc.x >= SCROLL_SCALE_MAX || sc.y >= SCROLL_SCALE_MAX || sc.z >= SCROLL_SCALE_MAX) {
+	} else if (sc.x >= SCROLL_SCALE_MAX || sc.y >= SCROLL_SCALE_MAX ||
+		sc.z >= SCROLL_SCALE_MAX) {
 		sc.x = SCROLL_SCALE_MAX;
 		sc.y = SCROLL_SCALE_MAX;
 		sc.z = SCROLL_SCALE_MAX;

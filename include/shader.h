@@ -7,8 +7,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-using namespace glm;
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,13 +29,15 @@ private:
 	GLuint id;
 
 public:
-	explicit Shader(const char *vertex_shader_path, const char *fragment_shader_path);
-	GLuint create(const char *vertex_shader_path, const char *fragment_shader_path);
+	explicit Shader(const char *vertex_shader_path,
+		const char *fragment_shader_path);
+	GLuint create(const char *vertex_shader_path,
+		const char *fragment_shader_path);
 	void use();
 	GLuint getId();
 	template <typename T> void setValue(const char *name, T &value);
 	void setVec3(const char *name, float x, float y, float z);
-	void setMat4(const char *name, const mat4 &mat);
+	void setMat4(const char *name, const glm::mat4 &mat);
 };
 
 #endif

@@ -1,10 +1,12 @@
 #include <shader.h>
 
-Shader::Shader(const char *vertex_shader_path, const char *fragment_shader_path) {
+Shader::Shader(const char *vertex_shader_path,
+	const char *fragment_shader_path) {
 	id = create(vertex_shader_path, fragment_shader_path);
 }
 
-GLuint Shader::create(const char *vertex_shader_path, const char *fragment_shader_path) {
+GLuint Shader::create(const char *vertex_shader_path,
+	const char *fragment_shader_path) {
 	struct stat fileattribs;
 	size_t size;
 	int success;
@@ -39,7 +41,8 @@ GLuint Shader::create(const char *vertex_shader_path, const char *fragment_shade
 #endif
 
 #ifdef SHADER_DEBUG_PRINT_FILE
-	printf("%s\n%s%s\n%s\n%s", CGRN, vertex_shader_path, CLYEL, vertex_shader_source, CDFT);
+	printf("%s\n%s%s\n%s\n%s", CGRN, vertex_shader_path, CLYEL,
+		vertex_shader_source, CDFT);
 #endif
 
 	// compiling vertex shader
@@ -95,7 +98,8 @@ GLuint Shader::create(const char *vertex_shader_path, const char *fragment_shade
 #endif
 
 #ifdef SHADER_DEBUG_PRINT_FILE
-	printf("%s\n%s%s\n%s\n%s", CGRN, fragment_shader_path, CLYEL, fragment_shader_source, CDFT);
+	printf("%s\n%s%s\n%s\n%s", CGRN, fragment_shader_path, CLYEL,
+		fragment_shader_source, CDFT);
 #endif
 
 	// compiling fragment shader file
@@ -173,6 +177,6 @@ void Shader::setVec3(const char *name, float x, float y, float z) {
 	glUniform3f(glGetUniformLocation(id, name), x, y, z);
 }
 
-void Shader::setMat4(const char *name, const mat4 &mat) {
+void Shader::setMat4(const char *name, const glm::mat4 &mat) {
 	glUniformMatrix4fv(glGetUniformLocation(id, name), 1, GL_FALSE, &mat[0][0]);
 }
