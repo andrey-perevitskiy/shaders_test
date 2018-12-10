@@ -18,6 +18,7 @@
 #include <colors.h>
 
 #define SHADER_DEBUG
+
 #ifdef SHADER_DEBUG
 #define SHADER_DEBUG_PRINT_FILE
 #define SHADER_DEBUG_PRINT_PATH

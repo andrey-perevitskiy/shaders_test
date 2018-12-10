@@ -270,7 +270,8 @@ keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	}
 }
 
-static void scrollCallback(GLFWwindow *window, double xoffset,
+static void
+scrollCallback(GLFWwindow *window, double xoffset,
 	double yoffset) {
 	if (yoffset < 0) {
 		sc.x -= SCROLL_SENSITIVITY;
