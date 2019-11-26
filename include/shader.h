@@ -1,5 +1,5 @@
-#ifndef SHADERH
-#define SHADERH
+#ifndef SHADER_H
+#define SHADER_H
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -27,18 +27,18 @@
 
 class Shader {
 private:
-	GLuint id;
+    GLuint id;
 
 public:
-	explicit Shader(const char *vertex_shader_path,
-		const char *fragment_shader_path);
-	GLuint create(const char *vertex_shader_path,
-		const char *fragment_shader_path);
-	void use();
-	GLuint getId();
-	template <typename T> void setValue(const char *name, T &value);
-	void setVec3(const char *name, float x, float y, float z);
-	void setMat4(const char *name, const glm::mat4 &mat);
+    explicit Shader(const char *vertex_shader_path,
+        const char *fragment_shader_path);
+    GLuint create(const char *vertex_shader_path,
+        const char *fragment_shader_path);
+    void use();
+    GLuint getId();
+    template <typename T> void setValue(const char *name, T &value);
+    void setVec3(const char *name, float x, float y, float z);
+    void setMat4(const char *name, const glm::mat4 &mat);
 };
 
-#endif
+#endif /* SHADER_H */

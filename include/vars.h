@@ -1,12 +1,12 @@
-#ifndef VARSH
-#define VARSH
+#ifndef VARS_H
+#define VARS_H
 
 bool wireframe;
 
 struct scene_scale {
-	float x;
-	float y;
-	float z;
+    float x;
+    float y;
+    float z;
 } sc;
 
-#endif
+#endif /* VARS_H */

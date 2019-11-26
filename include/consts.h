@@ -1,5 +1,5 @@
-#ifndef CONSTSH
-#define CONSTSH
+#ifndef CONSTS_H
+#define CONSTS_H
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -15,4 +15,4 @@
 #define SCROLL_SCALE_MIN 0.1f
 #define SCROLL_SCALE_MAX 0.9f
 
-#endif
+#endif /* CONSTS_H */
