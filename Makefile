@@ -1,29 +1,26 @@
-CXX=g++
-
-CXXFLAGS=-Wall -Iinclude -g
-LDFLAGS=-g -lGL -lGLEW -lglfw
-
-SRCS_DIR=src
-OBJS_DIR=obj
-BINS_DIR=bin
-
-OBJS_CLEAN=main.o shader.o
-OBJS=$(patsubst %,$(OBJS_DIR)/%,$(OBJS_CLEAN))
-
-PROG_NAME=prog
+CXX = g++
+CXXFLAGS = -Wall -Wextra -Wno-unused-parameter -Iinclude
+LDFLAGS = -lGL -lGLEW -lglfw
+SRCDIR = src
+OBJDIR = obj
+BINDIR = bin
+OBJS = $(patsubst %,$(OBJDIR)/%,main.o shader.o)
 
 .PHONY: all
-all: $(OBJS)
-	$(CXX) $(LDFLAGS) -o $(BINS_DIR)/$(PROG_NAME) $^
+all: $(BINDIR)/prog
+
+$(BINDIR)/prog: $(OBJS) | $(BINDIR)
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
+
+$(OBJDIR):
+	mkdir $@
+
+$(BINDIR):
+	mkdir $@
 
 .PHONY: clean
 clean:
-	rm -rf $(BINS_DIR) $(OBJS_DIR)/*.o
-
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -c $^ -o $@
-
-$(OBJS): | $(BINS_DIR)
-
-$(BINS_DIR):
-	mkdir $@
+	rm -rf $(BINDIR) $(OBJDIR)

@@ -1,18 +1,32 @@
-#include <shader.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include "shader.hpp"
+#include "colors.hpp"
 
-Shader::Shader(const char *vs_path, const char *fs_path) {
+Shader::Shader (const char * vs_path, const char * fs_path)
+{
     id = createShaderProgram(
         createVertexShader(vs_path),
         createFragmentShader(fs_path)
     );
 }
 
-GLuint Shader::createVertexShader(const char *path) {
-    FILE *f;
+GLuint
+Shader::createVertexShader (const char * path)
+{
+    FILE * f;
     struct stat fattrs;
     size_t size;
     GLchar *src;
-    GLchar *log = NULL;
+    GLchar * log = NULL;
     GLint status;
     GLuint s_id;
 
@@ -81,12 +95,14 @@ GLuint Shader::createVertexShader(const char *path) {
     return s_id;
 }
 
-GLuint Shader::createFragmentShader(const char *path) {
-    FILE *f;
+GLuint
+Shader::createFragmentShader (const char * path)
+{
+    FILE * f;
     struct stat fattrs;
     size_t size;
-    GLchar *src;
-    GLchar *log = NULL;
+    GLchar * src;
+    GLchar * log = NULL;
     GLint status;
     GLuint s_id;
 
@@ -155,9 +171,11 @@ GLuint Shader::createFragmentShader(const char *path) {
     return s_id;
 }
 
-GLuint Shader::createShaderProgram(GLuint vs_id, GLuint fs_id) {
+GLuint
+Shader::createShaderProgram (GLuint vs_id, GLuint fs_id)
+{
     GLint status;
-    GLchar *log = NULL;
+    GLchar * log = NULL;
 
     this->id = glCreateProgram();
 
@@ -189,24 +207,34 @@ GLuint Shader::createShaderProgram(GLuint vs_id, GLuint fs_id) {
     return this->id;
 }
 
-void Shader::use() {
+void
+Shader::use ()
+{
     glUseProgram(id);
 }
 
-GLuint Shader::getId() {
+GLuint
+Shader::getId ()
+{
     return id;
 }
 
 template <typename T>
-void Shader::setValue(const char *name, T &value) {
+void
+Shader::setValue (const char * name, T &value)
+{
     glUniform1i(glGetUniformLocation(id, name), value);
 }
 
-void Shader::setVec3(const char *name, float x, float y, float z) {
+void
+Shader::setVec3 (const char * name, float x, float y, float z)
+{
     glUniform3f(glGetUniformLocation(id, name), x, y, z);
 }
 
-void Shader::setMat4(const char *name, const glm::mat4 &mat) {
+void
+Shader::setMat4 (const char * name, const glm::mat4 &mat)
+{
     glUniformMatrix4fv(glGetUniformLocation(id, name), 1, GL_FALSE,
         &mat[0][0]);
 }

@@ -1,31 +1,74 @@
+#include <stdio.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "shader.hpp"
+#include "consts.hpp"
+#include "vars.hpp"
+#include "colors.hpp"
 
-#include <stdio.h>
+static void
+framebufferSizeCallback (GLFWwindow * window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
 
-#include <consts.h>
-#include <colors.h>
-#include <shader.h>
-#include <vars.h>
+static void
+keyCallback (GLFWwindow * window, int key, int scancode, int action, int mods)
+{
+    if (action == GLFW_PRESS)
+        switch (key) {
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window, true);
 
-static void framebufferSizeCallback(GLFWwindow *window, int width,
-    int height);
-static void keyCallback(GLFWwindow* window, int key, int scancode,
-    int action, int mods);
-static void scrollCallback(GLFWwindow *window, double xoffset,
-    double yoffset);
+            break;
+        case GLFW_KEY_F1:
+            if (wireframe)
+                wireframe = false;
+            else
+                wireframe = true;
 
-int main() {
-    GLuint vao[2];
-    GLuint vbo[4];
-    GLuint ebo[2];
+            break;
+        }
+}
 
+static void
+scrollCallback (GLFWwindow * window, double x_offset, double y_offset)
+{
+    if (y_offset < 0) {
+        sc.x -= SCROLL_SENSITIVITY;
+        sc.y -= SCROLL_SENSITIVITY;
+        sc.z -= SCROLL_SENSITIVITY;
+    } else {
+        sc.x += SCROLL_SENSITIVITY;
+        sc.y += SCROLL_SENSITIVITY;
+        sc.z += SCROLL_SENSITIVITY;
+    }
+
+    if (sc.x <= SCROLL_SCALE_MIN || sc.y <= SCROLL_SCALE_MIN
+            || sc.z <= SCROLL_SCALE_MIN) {
+        sc.x = SCROLL_SCALE_MIN;
+        sc.y = SCROLL_SCALE_MIN;
+        sc.z = SCROLL_SCALE_MIN;
+    } else if (sc.x >= SCROLL_SCALE_MAX || sc.y >= SCROLL_SCALE_MAX
+            || sc.z >= SCROLL_SCALE_MAX) {
+        sc.x = SCROLL_SCALE_MAX;
+        sc.y = SCROLL_SCALE_MAX;
+        sc.z = SCROLL_SCALE_MAX;
+    }
+}
+
+int
+main ()
+{
+    GLFWwindow * window;
+    GLuint vao [2];
+    GLuint vbo [4];
+    GLuint ebo [2];
     // cube attribs
-    GLfloat cube_vertices[] = {
+    GLfloat cube_vertices [] = {
         -0.5f, -0.5f,  0.5f, // FRONT left bottom
          0.5f, -0.5f,  0.5f, // FRONT right bottom
         -0.5f,  0.5f,  0.5f, // FRONT left top
@@ -35,8 +78,7 @@ int main() {
          0.5f,  0.5f, -0.5f, // BACK right top
          0.5f, -0.5f, -0.5f  // BACK right bottom
     };
-
-    GLfloat cube_colors[] = {
+    GLfloat cube_colors [] = {
         1.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 1.0f,
@@ -44,8 +86,7 @@ int main() {
         0.0f, 1.0f, 1.0f,
         1.0f, 1.0f, 0.0f
     };
-
-    GLuint cube_indices[] = {
+    GLuint cube_indices [] = {
         // front
         0, 1, 2,
         2, 1, 3,
@@ -70,20 +111,17 @@ int main() {
         0, 1, 5,
         5, 1, 7
     };
-
     // flat attribs
-    GLfloat flat_vertices[] = {
+    GLfloat flat_vertices [] = {
         -2.0f, -0.5f,  2.0f,
          2.0f, -0.5f,  2.0f,
         -2.0f, -0.5f, -2.0f,
          2.0f, -0.5f, -2.0f
     };
-
-    GLfloat flat_colors[] = {
+    GLfloat flat_colors [] = {
         0.5f, 0.5f, 0.5f,
     };
-
-    GLuint flat_indices[] = {
+    GLuint flat_indices [] = {
         0, 1, 2,
         2, 1, 3,
     };
@@ -93,7 +131,6 @@ int main() {
     glewExperimental = true;
     if (!glfwInit()) {
         printf("failed!\n");
-
         return -1;
     }
 
@@ -104,18 +141,10 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow *window = glfwCreateWindow(
-        640,
-        480,
-        "Shaders test",
-        NULL,
-        NULL
-    );
+    window = glfwCreateWindow(640, 480, "Shaders test", NULL, NULL);
     if (window == NULL) {
         printf("failed!\n");
-
         glfwTerminate();
-
         return -1;
     }
 
@@ -133,7 +162,7 @@ int main() {
     Shader cube_shader("shaders/cube.vert.glsl", "shaders/cube.frag.glsl");
     Shader flat_shader("shaders/flat.vert.glsl", "shaders/flat.frag.glsl");
 
-	printf("\n");
+    printf("\n");
 
     glGenVertexArrays(2, vao);
     glGenBuffers(4, vbo);
@@ -178,12 +207,6 @@ int main() {
         GL_STATIC_DRAW);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
     glEnableVertexAttribArray(1);
-
-    // wireframe mode on
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    // wireframe mode off
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -260,56 +283,4 @@ int main() {
     glfwTerminate();
 
     return 0;
-}
-
-static void
-framebufferSizeCallback(GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-static void
-keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (action == GLFW_PRESS) {
-        switch (key) {
-        case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, true);
-
-            break;
-        case GLFW_KEY_F1:
-            if (wireframe)
-                wireframe = false;
-            else
-                wireframe = true;
-
-            break;
-        }
-    }
-}
-
-static void
-scrollCallback(GLFWwindow *window, double x_offset, double y_offset) {
-    if (y_offset < 0) {
-        sc.x -= SCROLL_SENSITIVITY;
-        sc.y -= SCROLL_SENSITIVITY;
-        sc.z -= SCROLL_SENSITIVITY;
-    } else {
-        sc.x += SCROLL_SENSITIVITY;
-        sc.y += SCROLL_SENSITIVITY;
-        sc.z += SCROLL_SENSITIVITY;
-    }
-
-    // debug
-    /*printf("sc.x: %.3f | sc.y: %.3f | sc.z: %.3f\n", sc.x, sc.y, sc.z);*/
-
-    if (sc.x <= SCROLL_SCALE_MIN || sc.y <= SCROLL_SCALE_MIN ||
-            sc.z <= SCROLL_SCALE_MIN) {
-        sc.x = SCROLL_SCALE_MIN;
-        sc.y = SCROLL_SCALE_MIN;
-        sc.z = SCROLL_SCALE_MIN;
-    } else if (sc.x >= SCROLL_SCALE_MAX || sc.y >= SCROLL_SCALE_MAX ||
-            sc.z >= SCROLL_SCALE_MAX) {
-        sc.x = SCROLL_SCALE_MAX;
-        sc.y = SCROLL_SCALE_MAX;
-        sc.z = SCROLL_SCALE_MAX;
-    }
 }

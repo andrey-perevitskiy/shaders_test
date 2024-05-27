@@ -1,5 +1,4 @@
 #ifndef COLORS_H
-#define COLORS_H
 
 #define CDFT "\x1B[0m"
 #define CRED "\x1B[31m"
@@ -13,4 +12,5 @@
 #define CLBLU "\x1B[94m"
 #define CLCYA "\x1B[96m"
 
-#endif /* COLORS_H */
+#define COLORS_H
+#endif
